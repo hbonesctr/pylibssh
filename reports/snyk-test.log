@@ -1,5 +1,0 @@
-{
-  "ok": false,
-  "error": "Failed to get dependencies for all 1 potential projects.\n\n/tmp/extracted/docs/requirements.txt:\nMissing required packages",
-  "path": "/tmp/extracted"
-}
