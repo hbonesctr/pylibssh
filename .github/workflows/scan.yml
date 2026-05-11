@@ -627,10 +627,11 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: consolidate-reports
-    # Fires automatically on every successful consolidate-reports.
-    # Works on push and workflow_dispatch — no mobile UI required.
-    if: ${{ needs.consolidate-reports.result == 'success' }}
+    needs: generate-security-reports
+    # Runs after generate-security-reports (which has continue-on-error).
+    # Release is always created if consolidate-reports succeeded,
+    # regardless of whether report generation succeeded or failed.
+    if: ${{ needs.generate-security-reports.result == 'success' }}
 
     steps:
       - name: Checkout repository
@@ -651,6 +652,17 @@ jobs:
         run: |
           [ -f REFERENCES.md ]          && cp REFERENCES.md          release-artifacts/ || true
           [ -f COMPLIANCE-OVERVIEW.md ] && cp COMPLIANCE-OVERVIEW.md release-artifacts/ || true
+
+      - name: Download formatted reports into archive
+        # Places the 9 formatted reports at the same level as
+        # REFERENCES.md and COMPLIANCE-OVERVIEW.md inside release-artifacts/.
+        # continue-on-error: if report generation failed upstream,
+        # the release still builds with raw evidence only.
+        uses: actions/download-artifact@v4
+        with:
+          name: formatted-reports
+          path: release-artifacts/
+        continue-on-error: true
 
       # ─────────────────────────────────────────────────────────────────────
       # Build rich, data-driven release body from actual scan JSON outputs.
@@ -1043,10 +1055,17 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
 
       - name: Build release archive ZIP
+        # release-artifacts/ now contains:
+        #   COMPLIANCE-OVERVIEW.md   )
+        #   REFERENCES.md            ) same level
+        #   *-report.docx/html/md    )
+        #   reports/                 ← raw scan evidence subdirectory
         run: |
           zip -r security-scan-reports-${{ github.run_number }}.zip \
             release-artifacts/
           echo "Archive size: $(du -sh security-scan-reports-${{ github.run_number }}.zip)"
+          echo "Archive contents:"
+          unzip -l security-scan-reports-${{ github.run_number }}.zip | head -40
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -1054,17 +1073,32 @@ jobs:
           tag_name:  security-scan-${{ github.run_number }}
           name:      "OSS Security Scan — Run ${{ github.run_number }}"
           body_path: /tmp/release-body.md
-          files:     security-scan-reports-${{ github.run_number }}.zip
-          token:     ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            security-scan-reports-${{ github.run_number }}.zip
+            release-artifacts/developer-report.docx
+            release-artifacts/developer-report.html
+            release-artifacts/developer-report.md
+            release-artifacts/analyst-report.docx
+            release-artifacts/analyst-report.html
+            release-artifacts/analyst-report.md
+            release-artifacts/leadership-report.docx
+            release-artifacts/leadership-report.html
+            release-artifacts/leadership-report.md
+          token:                ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: false
 
 # ============================================================
-# JOB 8 — Generate formatted compliance reports
-# Produces 9 files: Developer / Analyst / Leadership × DOCX / HTML / MD
-# Attaches all 9 to the GitHub Release created in Job 7
+# JOB 7 — Generate formatted compliance reports
+# Runs BEFORE create-release so reports exist when the ZIP
+# is built. continue-on-error: true ensures the release is
+# always created even if generate_reports.py fails.
+# Produces 9 files: Developer / Analyst / Leadership x DOCX / HTML / MD
+# Uploads as artifact "formatted-reports" for create-release to consume.
 # ============================================================
   generate-security-reports:
     runs-on: ubuntu-latest
-    needs: create-release
+    needs: consolidate-reports
+    continue-on-error: true
 
     steps:
       - name: Checkout repository
@@ -1105,26 +1139,9 @@ jobs:
             echo "WARNING: Fewer than ${EXPECTED} report files generated."
           fi
 
-      - name: Upload security-reports artifact
+      - name: Upload formatted-reports artifact
         uses: actions/upload-artifact@v4
         with:
-          name: security-reports-${{ github.run_number }}
+          name: formatted-reports
           path: /tmp/security-reports/
           retention-days: 90
-
-      - name: Attach reports to release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: security-scan-${{ github.run_number }}
-          files: |
-            /tmp/security-reports/developer-report.docx
-            /tmp/security-reports/developer-report.html
-            /tmp/security-reports/developer-report.md
-            /tmp/security-reports/analyst-report.docx
-            /tmp/security-reports/analyst-report.html
-            /tmp/security-reports/analyst-report.md
-            /tmp/security-reports/leadership-report.docx
-            /tmp/security-reports/leadership-report.html
-            /tmp/security-reports/leadership-report.md
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fail_on_unmatched_files: false
