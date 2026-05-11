@@ -1,0 +1,41 @@
+[
+  {
+    "issues": [],
+    "issuesData": {},
+    "depGraphData": {
+      "schemaVersion": "1.2.0",
+      "pkgManager": {
+        "name": "cpp"
+      },
+      "pkgs": [
+        {
+          "id": "root-node@0.0.0",
+          "info": {
+            "name": "root-node",
+            "version": "0.0.0"
+          }
+        }
+      ],
+      "graph": {
+        "rootNodeId": "root-node",
+        "nodes": [
+          {
+            "nodeId": "root-node",
+            "pkgId": "root-node@0.0.0",
+            "deps": []
+          }
+        ]
+      }
+    },
+    "depsFilePaths": {},
+    "fileSignaturesDetails": {},
+    "vulnerabilities": [],
+    "path": "/tmp/extracted",
+    "dependencyCount": 0,
+    "packageManager": "Unmanaged (C/C++)",
+    "displayTargetFile": "",
+    "filtered": {
+      "ignore": []
+    }
+  }
+]
