@@ -709,12 +709,9 @@ jobs:
         run: |
           mkdir -p /tmp/security-reports
           python scripts/generate_reports.py \
-            --reports-dir    reports/ \
-            --output-dir     /tmp/security-reports/ \
-            --run-number     ${{ github.run_number }} \
-            --repository     "${{ github.repository }}" \
-            --commit         "${{ github.sha }}" \
-            --scan-date      "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            --reports-dir   reports/ \
+            --profile-path  cia-profile.yaml \
+            --output-dir    /tmp/security-reports/
 
       - name: Verify report outputs
         run: |
