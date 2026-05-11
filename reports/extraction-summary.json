@@ -1,0 +1,11 @@
+{
+  "run_number":   2,
+  "repository":   "hbonesctr/pylibssh",
+  "ref":          "refs/heads/devel",
+  "sha":          "d15852e2817d938b546c56ace03a4658c1a7d92f",
+  "triggered_by": "push",
+  "timestamp":    "2026-05-11T14:57:51Z",
+  "file_count":   107,
+  "dir_count":    19,
+  "total_size":   "728K"
+}
