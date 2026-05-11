@@ -1,5 +1,7 @@
 # ============================================================
-# DoD Security Scanner — Fork Model
+# Open Source Software (OSS) Security Scanner — Fork Model
+# Author: Hector L. Bones
+# Date: 2026-05-11
 # Version: 2.3-fork
 # Trigger: Upload this file to .github/workflows/scan.yml
 #          in a forked repository that already contains
@@ -13,7 +15,7 @@
 # Subsequent runs: use the Actions tab → Run workflow button.
 # ============================================================
 
-name: DoD Security Scanner
+name: Open Source Software (OSS) Security Scanner
 
 on:
   workflow_dispatch:
