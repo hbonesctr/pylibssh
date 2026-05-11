@@ -2,7 +2,7 @@
 # Open Source Software (OSS) Security Scanner — Fork Model
 # Author: Hector L. Bones
 # Date: 2026-05-11
-# Version: 2.3-fork
+# Version: 2.4-fork
 # Trigger: Upload this file to .github/workflows/scan.yml
 #          in a forked repository that already contains
 #          scanner-payload/scanner-payload.zip
@@ -583,7 +583,7 @@ jobs:
           | SR-3 | Syft SBOM | NIST SP 800-53 Rev 5 |
           | SR-4 | Syft SBOM (PURL/CPE) | NIST SP 800-53 Rev 5 |
 
-          *Generated automatically by DoD Security Scanner v2.3-fork*
+          *Generated automatically by Open Source Software (OSS) Security Scanner v2.4-fork*
           REPORT
 
           cp reports/SCA-Report-Run-${RUN}.md reports/Security-Scan-Report-Latest.md
