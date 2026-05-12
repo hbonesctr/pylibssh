@@ -1,3 +1,0 @@
-/tmp/extracted/setup.cfg
-/tmp/extracted/docs/requirements.txt
-/tmp/extracted/pyproject.toml
